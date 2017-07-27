@@ -8,7 +8,7 @@ Lastly, follow [these](https://pages.github.com/) instructions if you want to st
 
 ## Synopsis
 
-A summary of your project. This is the 150 word description from your proposal. Include your project banner and photos of team members.
+test
 
 ## Software
 
