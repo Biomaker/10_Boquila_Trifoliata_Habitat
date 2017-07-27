@@ -1,4 +1,4 @@
-<img src="images/Banner.pdf" alt="image" style="width: 500px;"/>
+<img src="images/Banner.png" alt="image" style="width: 500px;"/>
 
 
 Here are some loose guidlines meant to give you an idea of what information we expect to find in each repository. Feel free to present your documentation in the most accessible/suitable order and style but you **must** include project data relating to the headings below, if relevant to your project. Also, include your final proposal in the top directory.
