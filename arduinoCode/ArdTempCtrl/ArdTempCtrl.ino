@@ -144,6 +144,7 @@ void loop()
     delay(1000);
 }
 
+//Function to print Information on GOVE LCD
 void printToLCD(float h1, float h2, float t1, float t2, float tod)
 {
     // set the cursor to column 0, line 1
