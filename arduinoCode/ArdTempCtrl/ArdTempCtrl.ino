@@ -1,6 +1,9 @@
 #include <Time.h>
 #include <TimeLib.h>
+
+
 #include <DHT.h>
+
 #include <rgb_lcd.h>
 #include <Wire.h>
 rgb_lcd lcd;
@@ -20,26 +23,26 @@ const int colorG = 255;
 const int colorB = 255;
 
 //LED array pins
-int led11=8;
-int led12=9;
-int led13=10;
-int led21=11;
-int led22=12;
-int led23=13;
-
+int led1=A1;
+//int led2=??;
 //peltier pins
-int pel11=6;
-int pel12=7;
+int pel11=8;
+int pel12=11;
+int pel1drive=9;
 
-int pel21=4;
-int pel22=5;
+int pel21=12;
+int pel22=13;
+int pel2drive=10;
 
 //Set parameters for day night
-float tday=25;
+float tday=15;
 float tnight=15;
 
 //Start time
-int t0=18;
+int t0=17;
+
+//Peldrive speed
+int speed=50;
     
 
 void setup() 
@@ -49,11 +52,16 @@ void setup()
     
     lcd.setRGB(colorR, colorG, colorB);
 
-    //LED array pin
-    pinMode(led11, OUTPUT);
-
     //peltier elements pin
     pinMode(pel11, OUTPUT);
+    pinMode(pel12, OUTPUT);
+    pinMode(pel1drive, OUTPUT);
+    pinMode(pel21, OUTPUT);
+    pinMode(pel22, OUTPUT);
+    pinMode(pel2drive, OUTPUT);
+    //setup LED pins
+    pinMode(led1,OUTPUT);
+//    pinMode(led2,OUTPUT);
 
     //start temphum sensor
     dht1.begin();
@@ -74,23 +82,25 @@ void loop()
     float del2;
 
     //get hour of the day
-    int tod=(second()+t0)%24;
+    int tod=(hour()+t0)%24;
     
     printToLCD(h1, h2, t1, t2, tod);
 
     // If night
-    if (tod<12) {
+    if (tod<6 || tod>18) {
       //switch off LED arrays
-      digitalWrite(led11,HIGH);
+      digitalWrite(led1,HIGH);
+//      digitalWrite(led2,HIGH);
       //calculate difference between desired temperature and measured one (night)
       del1=tnight-t1;
       del2=tnight-t2;
       Serial.print(del1);
       Serial.print(del2);
     }
-    else if (tod>=12) {
+    else if (tod>=6 && tod<=18) {
       //switch on LED arrays
-      digitalWrite(led11,LOW);
+      digitalWrite(led1,LOW);
+//      digitalWrite(led2,HIGH);  
       //calculate difference between desired temperature and measured one (day)
       del1=tday-t1;
       del2=tday-t2;
@@ -99,7 +109,7 @@ void loop()
     //chamber1
     if (del1<-1){
       //Cooling
-      Serial.print("foo");
+      analogWrite(pel1drive,speed);
       digitalWrite(pel11,HIGH);
       digitalWrite(pel12,LOW);
       lcd.setCursor(14, 0);
@@ -107,6 +117,7 @@ void loop()
     }
     else if (del1>1){
       //Heating
+      analogWrite(pel1drive,speed);
       digitalWrite(pel11,LOW);
       digitalWrite(pel12,HIGH);
       lcd.setCursor(14, 0);
@@ -114,14 +125,15 @@ void loop()
     }
     else{  
       //Nothing
+      analogWrite(pel1drive,0);
       digitalWrite(pel11,LOW);
       digitalWrite(pel12,LOW);
       lcd.setCursor(14, 0);
       lcd.print("-");
     }
-    //chamber2
     if (del2<-1){
       //Cooling
+      analogWrite(pel2drive,speed);
       digitalWrite(pel21,HIGH);
       digitalWrite(pel22,LOW);
       lcd.setCursor(15, 0);
@@ -129,18 +141,20 @@ void loop()
     }
     else if (del2>1){
       //Heating
+      analogWrite(pel2drive,speed);
       digitalWrite(pel21,LOW);
       digitalWrite(pel22,HIGH);
       lcd.setCursor(15, 0);
       lcd.print("H");
     }
-    else{
+    else{  
       //Nothing
+      analogWrite(pel2drive,0);
       digitalWrite(pel21,LOW);
       digitalWrite(pel22,LOW);
       lcd.setCursor(15, 0);
       lcd.print("-");
-    }  
+    }
     delay(1000);
 }
 
